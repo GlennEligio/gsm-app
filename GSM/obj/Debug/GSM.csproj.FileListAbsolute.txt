@@ -1,0 +1,11 @@
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\GSM.exe.config
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\GSM.exe
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\GSM.pdb
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.AssemblyReference.cache
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.SuggestedBindingRedirects.cache
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.Form1.resources
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.Properties.Resources.resources
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.GenerateResource.cache
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.CoreCompileInputs.cache
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.exe
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.pdb
