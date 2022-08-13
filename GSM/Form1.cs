@@ -21,6 +21,7 @@ namespace GSM
         private string gsmPortNumber = "";
         private SerialPort gsmPort;
         private bool isConnected = false;
+        private bool initialPoll = true;
 
         public Form1()
         {
@@ -116,13 +117,13 @@ namespace GSM
             Console.WriteLine("Reading..");
 
             gsmPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
-            Thread.Sleep(1000); // Give a second to write
+            Thread.Sleep(200); // Give a second to write
             gsmPort.WriteLine("AT+CPMS=\"SM\""); // Set storage to SIM(SM)
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             gsmPort.WriteLine("AT+CMGL=\"ALL\""); // What category to read ALL, REC READ, or REC UNREAD
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             gsmPort.Write("\r");
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
 
             string response = gsmPort.ReadExisting();
 
@@ -137,6 +138,28 @@ namespace GSM
                 Console.WriteLine(response);
                 return null;
             }
+        }
+
+        private string Delete()
+        {
+            Console.WriteLine("Deleting...");
+            gsmPort.WriteLine("AT+CMGD=1,4" + Environment.NewLine);
+            Thread.Sleep(200);
+
+            string response = gsmPort.ReadExisting();
+
+            if (response.EndsWith("\r\nOK\r\n"))
+            {
+                Console.WriteLine(response);
+                return response;
+            }
+            else
+            {
+                // add more code here to handle error.
+                Console.WriteLine(response);
+                return null;
+            }
+
         }
 
         private void btnSendMessage_Click(object sender, EventArgs e)
@@ -154,10 +177,15 @@ namespace GSM
         {
             if (isConnected)
             {
+                if(initialPoll)
+                {
+                    Thread.Sleep(1000);
+                    initialPoll = false;
+                }
                 string receivedMessages = Read();
                 if (receivedMessages != null)
                 {
-                    txtReceivedMessages.AppendText(receivedMessages);
+                    txtReceivedMessages.Text = receivedMessages;
                 }
             }
         }
@@ -187,6 +215,13 @@ namespace GSM
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
             Disconnect();
+            if(!isConnected)
+            {
+                MessageBox.Show("Disconnected", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else
+            {
+                MessageBox.Show("Disconnection failed", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void btnReadMessage_Click(object sender, EventArgs e)
@@ -196,8 +231,20 @@ namespace GSM
                 string messages = Read();
                 if(messages != null)
                 {
-                    txtReceivedMessages.AppendText(messages);
+                    txtReceivedMessages.Text = messages;
                 }
+            }
+        }
+
+        private void btnDeleteMessages_Click(object sender, EventArgs e)
+        {
+            string output = Delete();
+            if(output == null)
+            {
+                MessageBox.Show("Delete failed", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } else
+            {
+                MessageBox.Show("Delete successfully", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

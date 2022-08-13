@@ -42,6 +42,7 @@
             this.btnConnect = new System.Windows.Forms.Button();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnReadMessage = new System.Windows.Forms.Button();
+            this.btnDeleteMessages = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -124,7 +125,7 @@
             this.txtReceivedMessages.Location = new System.Drawing.Point(463, 78);
             this.txtReceivedMessages.Multiline = true;
             this.txtReceivedMessages.Name = "txtReceivedMessages";
-            this.txtReceivedMessages.ReadOnly = true;
+            this.txtReceivedMessages.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtReceivedMessages.Size = new System.Drawing.Size(304, 187);
             this.txtReceivedMessages.TabIndex = 9;
             // 
@@ -158,11 +159,22 @@
             this.btnReadMessage.UseVisualStyleBackColor = true;
             this.btnReadMessage.Click += new System.EventHandler(this.btnReadMessage_Click);
             // 
+            // btnDeleteMessages
+            // 
+            this.btnDeleteMessages.Location = new System.Drawing.Point(627, 282);
+            this.btnDeleteMessages.Name = "btnDeleteMessages";
+            this.btnDeleteMessages.Size = new System.Drawing.Size(140, 23);
+            this.btnDeleteMessages.TabIndex = 13;
+            this.btnDeleteMessages.Text = "Delete messages";
+            this.btnDeleteMessages.UseVisualStyleBackColor = true;
+            this.btnDeleteMessages.Click += new System.EventHandler(this.btnDeleteMessages_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(863, 360);
+            this.Controls.Add(this.btnDeleteMessages);
             this.Controls.Add(this.btnReadMessage);
             this.Controls.Add(this.btnDisconnect);
             this.Controls.Add(this.btnConnect);
@@ -198,6 +210,7 @@
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnReadMessage;
+        private System.Windows.Forms.Button btnDeleteMessages;
     }
 }
 
