@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -44,9 +45,9 @@ namespace GSM
 
         private bool Connect()
         {
-            Console.WriteLine("Connecting");
-            if (gsmPort == null || !isConnected || gsmPort.IsOpen)
+            if (gsmPort == null || !isConnected || !gsmPort.IsOpen)
             {
+                Console.WriteLine("Connecting");
                 gsmPort = new SerialPort();
                 if (gsmPortNumber == null || gsmPortNumber == "")
                 {
@@ -114,34 +115,61 @@ namespace GSM
 
         private string Read()
         {
-            Console.WriteLine("Reading..");
-
-            gsmPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
-            Thread.Sleep(200); // Give a second to write
-            gsmPort.WriteLine("AT+CPMS=\"SM\""); // Set storage to SIM(SM)
-            Thread.Sleep(200);
-            gsmPort.WriteLine("AT+CMGL=\"ALL\""); // What category to read ALL, REC READ, or REC UNREAD
-            Thread.Sleep(200);
-            gsmPort.Write("\r");
-            Thread.Sleep(200);
-
-            string response = gsmPort.ReadExisting();
-
-            if (response.EndsWith("\r\nOK\r\n"))
+            if(isConnected)
             {
-                Console.WriteLine(response);
-                return response;
-            }
-            else
+                Console.WriteLine("Reading..");
+
+                gsmPort.WriteLine("AT+CMGF=1" + Environment.NewLine); // Set mode to Text(1) or PDU(0)
+                Thread.Sleep(1000); // Give a second to write
+                gsmPort.WriteLine("AT+CPMS=\"SM\"" + Environment.NewLine); // Set storage to SIM(SM)
+                Thread.Sleep(1000);
+                gsmPort.WriteLine("AT+CMGL=\"ALL\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
+                Thread.Sleep(3000);
+
+                string response = gsmPort.ReadExisting();
+
+                if (response.Contains("\r\nOK\r\n"))
+                {
+                    Regex r = new Regex(@"\+CMGL: (\d+),""(.+)"",""(.+)"",""(.*)"",""(.+)""\r\n(.+)\r\n");
+                    Match m = r.Match(response);
+
+                    // clear listView
+                    listView1.Items.Clear();
+                    listView1.Refresh();
+
+                    while (m.Success)
+                    {
+                        string a = m.Groups[1].Value; // message index in sim (ZERO index)
+                        string b = m.Groups[2].Value; // status of message (REC READ or REC UNREAD whether msg is read or)
+                        string c = m.Groups[3].Value; // phone number
+                        string d = m.Groups[4].Value;
+                        string e = m.Groups[5].Value; // date of message received
+                        string f = m.Groups[6].Value; // contents of message
+
+                        // populate listItem
+                        ListViewItem item = new ListViewItem(new string[] { a, b, c, d, e, f });
+                        listView1.Items.Add(item);
+                        m = m.NextMatch();
+
+                    }
+                    return response;
+                }
+                else
+                {
+                    // add more code here to handle error.
+                    Console.WriteLine("Error message" + response);
+                    return null;
+                }
+            } else
             {
-                // add more code here to handle error.
-                Console.WriteLine(response);
+                MessageBox.Show("You are not connected yet to GSM", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
         }
 
         private string Delete()
         {
+            timerGsmMessagePoll.Stop();
             Console.WriteLine("Deleting...");
             gsmPort.WriteLine("AT+CMGD=1,4" + Environment.NewLine);
             Thread.Sleep(200);
@@ -150,7 +178,9 @@ namespace GSM
 
             if (response.EndsWith("\r\nOK\r\n"))
             {
-                Console.WriteLine(response);
+                // clears listItem
+                listView1.Items.Clear();
+                listView1.Refresh();
                 return response;
             }
             else
@@ -181,12 +211,9 @@ namespace GSM
                 {
                     Thread.Sleep(1000);
                     initialPoll = false;
+                    return;
                 }
-                string receivedMessages = Read();
-                if (receivedMessages != null)
-                {
-                    txtReceivedMessages.Text = receivedMessages;
-                }
+                Read();
             }
         }
 
@@ -205,6 +232,7 @@ namespace GSM
             if (isConnected)
             {
                 MessageBox.Show("Connected", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                timerGsmMessagePoll.Start();
             }
             else
             {
@@ -218,6 +246,7 @@ namespace GSM
             if(!isConnected)
             {
                 MessageBox.Show("Disconnected", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                timerGsmMessagePoll.Stop();
             } else
             {
                 MessageBox.Show("Disconnection failed", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -228,11 +257,9 @@ namespace GSM
         {
             if(isConnected)
             {
-                string messages = Read();
-                if(messages != null)
-                {
-                    txtReceivedMessages.Text = messages;
-                }
+                timerGsmMessagePoll.Stop();
+                Read();
+                timerGsmMessagePoll.Start();
             }
         }
 
@@ -247,5 +274,6 @@ namespace GSM
                 MessageBox.Show("Delete successfully", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
     }
 }
