@@ -212,7 +212,6 @@
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "GSM app";
-            this.Click += new System.EventHandler(this.btnConnect_Click);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Timer = System.Timers.Timer;
 
 namespace GSM
 {
@@ -16,10 +14,15 @@ namespace GSM
         private readonly string GSM_TE_SET = "AT+CSCS=\"GSM\"" + Environment.NewLine;
         private SerialPort gsmPort;
         public bool isConnected { get; private set; } = false;
-        public bool initialPoll { get; set; } = true;
-        public string gsmPortNumber { get; set; } = "";
-        public List<Message> messages { get; private set; } = new List<Message>();
+        public string gsmPortNumber { get; private set; } = "";
+        public List<Message> gsmMessages { get; private set; } = new List<Message>();
+
         private static GSMsms instance = null;
+
+        private Timer timer = null;
+
+        private bool initialPoll = true;
+
         private GSMsms() { }
 
         public static GSMsms getInstance()
@@ -29,6 +32,11 @@ namespace GSM
                 instance = new GSMsms();
             }
             return instance;
+        }
+
+        public void setGsmPortNumber(string portNumber)
+        {
+            this.gsmPortNumber = portNumber;
         }
 
         public bool Connect()
@@ -64,9 +72,13 @@ namespace GSM
         {
             if (gsmPort != null || isConnected || gsmPort.IsOpen)
             {
+                timer.Stop();
+                timer.Dispose();
                 gsmPort.Close();
                 gsmPort.Dispose();
                 isConnected = false;
+                initialPoll = true;
+                gsmMessages = new List<Message>();
             }
         }
 
@@ -105,55 +117,62 @@ namespace GSM
 
         public List<Message> Read()
         {
-            if (isConnected)
+            try
             {
-                Console.WriteLine("Reading..");
-
-                gsmPort.WriteLine("AT+CMGF=1" + Environment.NewLine); // Set mode to Text(1) or PDU(0)
-                Thread.Sleep(1000); // Give a second to write
-                gsmPort.WriteLine("AT+CPMS=\"SM\"" + Environment.NewLine); // Set storage to SIM(SM)
-                Thread.Sleep(1000);
-                gsmPort.WriteLine("AT+CMGL=\"ALL\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
-                Thread.Sleep(3000);
-
-                string response = gsmPort.ReadExisting();
-
-                // clear listView
-                messages.Clear();
-
-                if (response.Contains("\r\nOK\r\n"))
+                if (isConnected)
                 {
-                    Regex r = new Regex(@"\+CMGL: (\d+),""(.+)"",""(.+)"",""(.*)"",""(.+)""\r\n(.+)\r\n");
-                    Match m = r.Match(response);
+                    Console.WriteLine("Reading..");
 
-                    while (m.Success)
+                    gsmPort.WriteLine("AT+CMGF=1" + Environment.NewLine); // Set mode to Text(1) or PDU(0)
+                    Thread.Sleep(1000); // Give a second to write
+                    gsmPort.WriteLine("AT+CPMS=\"SM\"" + Environment.NewLine); // Set storage to SIM(SM)
+                    Thread.Sleep(1000);
+                    gsmPort.WriteLine("AT+CMGL=\"ALL\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
+                    Thread.Sleep(3000);
+
+                    string response = gsmPort.ReadExisting();
+
+                    // clear listView
+                    gsmMessages.Clear();
+
+                    if (response.Contains("\r\nOK\r\n"))
                     {
-                        string a = m.Groups[1].Value; // message index in sim (ZERO index)
-                        string b = m.Groups[2].Value; // status of message (REC READ or REC UNREAD whether msg is read or)
-                        string c = m.Groups[3].Value; // phone number
-                        string d = m.Groups[4].Value;
-                        string e = m.Groups[5].Value; // date of message received
-                        string f = m.Groups[6].Value; // contents of message
+                        Regex r = new Regex(@"\+CMGL: (\d+),""(.+)"",""(.+)"",""(.*)"",""(.+)""\r\n(.+)\r\n");
+                        Match m = r.Match(response);
 
-                        // populate listItem
-                        messages.Add(new Message(c, f));
-                        Console.WriteLine(c + ": " + f);
-                        m = m.NextMatch();
+                        while (m.Success)
+                        {
+                            string a = m.Groups[1].Value; // message index in sim (ZERO index)
+                            string b = m.Groups[2].Value; // status of message (REC READ or REC UNREAD whether msg is read or)
+                            string c = m.Groups[3].Value; // phone number
+                            string d = m.Groups[4].Value;
+                            string e = m.Groups[5].Value; // date of message received
+                            string f = m.Groups[6].Value; // contents of message
+
+                            // populate messages property
+                            gsmMessages.Add(new Message(c, f));
+                            Console.WriteLine(c + ": " + f);
+                            m = m.NextMatch();
+                        }
+                        return gsmMessages;
                     }
-                    return messages;
+                    else
+                    {
+                        // add more code here to handle error.
+                        Console.WriteLine("Error message" + response);
+                        return null;
+                    }
                 }
                 else
                 {
-                    // add more code here to handle error.
-                    Console.WriteLine("Error message" + response);
+                    Console.WriteLine("You are not connected yet to GSM");
                     return null;
                 }
-            }
-            else
+            } catch (Exception e) 
             {
-                MessageBox.Show("You are not connected yet to GSM", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
-            }
+            };
+
         }
 
         public string Delete()
@@ -177,5 +196,29 @@ namespace GSM
             }
         }
 
+        public bool Read_Interval()
+        {
+            try {
+                Console.WriteLine("Reading in intervals...");
+                timer = new Timer(15000);
+                timer.Elapsed += OnTimedEvent;
+                timer.AutoReset = true;
+                timer.Enabled = true;
+                return true;
+            } catch (Exception e) {
+                Console.WriteLine("Reading intervals failed" + e.Message);
+                return false;
+            }
+        }
+
+        private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if(initialPoll)
+            {
+                initialPoll = false;
+                return;
+            }
+            Read();
+        }
     }
 }

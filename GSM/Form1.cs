@@ -16,6 +16,7 @@ namespace GSM
     public partial class Form1 : Form
     {
         private static GSMsms gsmSms;
+        private bool initialPoll = true;
 
         public Form1()
         {
@@ -48,21 +49,17 @@ namespace GSM
         {
             if (gsmSms.isConnected)
             {
-                if(gsmSms.initialPoll)
+                if(gsmSms.gsmMessages != null)
                 {
-                    Thread.Sleep(1000);
-                    gsmSms.initialPoll = false;
-                    return;
-                }
-                gsmSms.Read();
-                if (gsmSms.messages != null)
-                {
-                    listView1.Items.Clear();
-                    listView1.Refresh();
-                    for (int i = 0; i < gsmSms.messages.Count; i++)
+                    if(gsmSms.gsmMessages.Count > 0)
                     {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.messages.ElementAt(i).Sender, gsmSms.messages.ElementAt(i).Content });
-                        listView1.Items.Add(item);
+                        listView1.Items.Clear();
+                        listView1.Refresh();
+                        for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
+                        {
+                            ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
+                            listView1.Items.Add(item);
+                        }
                     }
                 }
             }
@@ -73,7 +70,7 @@ namespace GSM
             ComboBox cbox = sender as ComboBox;
             if (cbox != null)
             {
-                gsmSms.gsmPortNumber = cbox.Text;
+                gsmSms.setGsmPortNumber(cbox.Text);
             }
         }
 
@@ -106,6 +103,14 @@ namespace GSM
 
         private void btnReadMessage_Click(object sender, EventArgs e)
         {
+            if (gsmSms.isConnected)
+            {
+                gsmSms.Read_Interval();
+            }
+        }
+
+        private void btnReadMessage_Click1(object sender, EventArgs e)
+        {
             if(gsmSms.isConnected)
             {
                 timerGsmMessagePoll.Stop();
@@ -115,11 +120,11 @@ namespace GSM
                 listView1.Refresh();
 
                 gsmSms.Read();
-                if (gsmSms.messages != null)
+                if (gsmSms.gsmMessages != null)
                 {
-                    for(int i = 0; i < gsmSms.messages.Count; i++)
+                    for(int i = 0; i < gsmSms.gsmMessages.Count; i++)
                     {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.messages.ElementAt(i).Sender, gsmSms.messages.ElementAt(i).Content });
+                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
                         listView1.Items.Add(item);
                     }
                 }
