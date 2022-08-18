@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Configuration;
 using Timer = System.Timers.Timer;
 
 namespace GSM
@@ -27,33 +28,36 @@ namespace GSM
 
         public static GSMsms getInstance()
         {
-            if(instance == null)
+            if (instance == null)
             {
+                // creating instance of GSMsms
+                Console.WriteLine("Creating new instance");
                 instance = new GSMsms();
             }
             return instance;
         }
 
-        public void setGsmPortNumber(string portNumber)
-        {
-            this.gsmPortNumber = portNumber;
-        }
+        //public void setGsmPortNumber(string portNumber)
+        //{
+        //    this.gsmPortNumber = portNumber;
+        //}
 
         public bool Connect()
         {
             if (gsmPort == null || !isConnected || !gsmPort.IsOpen)
             {
                 Console.WriteLine("Connecting");
-                gsmPort = new SerialPort();
-                if (gsmPortNumber == null || gsmPortNumber == "")
+                string gsmPortConfig = ConfigurationManager.AppSettings["gsmPortNumber"];
+                if (gsmPortConfig == null || gsmPortConfig == "")
                 {
-                    MessageBox.Show("No port specified", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("No port specified, please edit the config file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
 
                 try
                 {
-                    gsmPort.PortName = gsmPortNumber;
+                    gsmPort = new SerialPort();
+                    gsmPort.PortName = gsmPortConfig;
                     gsmPort.Open();
                     isConnected = true;
                 }
@@ -127,7 +131,7 @@ namespace GSM
                     Thread.Sleep(1000); // Give a second to write
                     gsmPort.WriteLine("AT+CPMS=\"SM\"" + Environment.NewLine); // Set storage to SIM(SM)
                     Thread.Sleep(1000);
-                    gsmPort.WriteLine("AT+CMGL=\"ALL\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
+                    gsmPort.WriteLine("AT+CMGL=\"REC UNREAD\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
                     Thread.Sleep(3000);
 
                     string response = gsmPort.ReadExisting();
@@ -168,8 +172,10 @@ namespace GSM
                     Console.WriteLine("You are not connected yet to GSM");
                     return null;
                 }
-            } catch (Exception e) 
+            }
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return null;
             };
 
@@ -196,24 +202,65 @@ namespace GSM
             }
         }
 
-        public bool Read_Interval()
+        public bool ResetStoredMessages()
         {
-            try {
-                Console.WriteLine("Reading in intervals...");
-                timer = new Timer(15000);
-                timer.Elapsed += OnTimedEvent;
-                timer.AutoReset = true;
-                timer.Enabled = true;
+            timer.Stop();
+            try
+            {
+                this.gsmMessages.Clear();
                 return true;
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool Start_Read_Interval()
+        {
+            try
+            {
+                Console.WriteLine("Start reading in intervals...");
+                if (timer == null)
+                {
+                    timer = new Timer(15000);
+                    timer.Elapsed += OnTimedEvent;
+                    timer.AutoReset = true;
+                }
+                if (!timer.Enabled)
+                {
+                    timer.Start();
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
                 Console.WriteLine("Reading intervals failed" + e.Message);
+                return false;
+            }
+        }
+
+        public bool Stop_Read_Interval()
+        {
+            try
+            {
+                if (timer.Enabled && timer != null)
+                {
+                    Console.WriteLine("Stopping the read interval");
+                    timer.Stop();
+                }
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Stopping the read interval failed");
                 return false;
             }
         }
 
         private void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if(initialPoll)
+            if (initialPoll)
             {
                 initialPoll = false;
                 return;

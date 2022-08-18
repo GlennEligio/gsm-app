@@ -16,7 +16,6 @@ namespace GSM
     public partial class Form1 : Form
     {
         private static GSMsms gsmSms;
-        private bool initialPoll = true;
 
         public Form1()
         {
@@ -49,10 +48,11 @@ namespace GSM
         {
             if (gsmSms.isConnected)
             {
-                if(gsmSms.gsmMessages != null)
+                if (gsmSms.gsmMessages != null)
                 {
-                    if(gsmSms.gsmMessages.Count > 0)
+                    if (gsmSms.gsmMessages.Count > 0)
                     {
+                        gsmSms.Stop_Read_Interval();
                         listView1.Items.Clear();
                         listView1.Refresh();
                         for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
@@ -60,19 +60,21 @@ namespace GSM
                             ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
                             listView1.Items.Add(item);
                         }
+                        gsmSms.ResetStoredMessages();
+                        gsmSms.Start_Read_Interval();
                     }
                 }
             }
         }
 
-        private void cboxPorts_SelectedValueChanged(object sender, EventArgs e)
-        {
-            ComboBox cbox = sender as ComboBox;
-            if (cbox != null)
-            {
-                gsmSms.setGsmPortNumber(cbox.Text);
-            }
-        }
+        //private void cboxPorts_SelectedValueChanged(object sender, EventArgs e)
+        //{
+        //    ComboBox cbox = sender as ComboBox;
+        //    if (cbox != null)
+        //    {
+        //        gsmSms.setGsmPortNumber(cbox.Text);
+        //    }
+        //}
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -101,34 +103,11 @@ namespace GSM
             }
         }
 
-        private void btnReadMessage_Click(object sender, EventArgs e)
+        private void btnStartReadIntervalMessage_Click(object sender, EventArgs e)
         {
             if (gsmSms.isConnected)
             {
-                gsmSms.Read_Interval();
-            }
-        }
-
-        private void btnReadMessage_Click1(object sender, EventArgs e)
-        {
-            if(gsmSms.isConnected)
-            {
-                timerGsmMessagePoll.Stop();
-
-                // clear listView
-                listView1.Items.Clear();
-                listView1.Refresh();
-
-                gsmSms.Read();
-                if (gsmSms.gsmMessages != null)
-                {
-                    for(int i = 0; i < gsmSms.gsmMessages.Count; i++)
-                    {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
-                        listView1.Items.Add(item);
-                    }
-                }
-                timerGsmMessagePoll.Start();
+                gsmSms.Start_Read_Interval();
             }
         }
 
@@ -144,5 +123,34 @@ namespace GSM
             }
         }
 
+        private void btnFetchMessage_Click(object sender, EventArgs e)
+        {
+            if (gsmSms.isConnected)
+            {
+                timerGsmMessagePoll.Stop();
+                gsmSms.Stop_Read_Interval();
+
+                listView1.Refresh();
+
+                if (gsmSms.gsmMessages != null)
+                {
+                    for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
+                    {
+                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
+                        listView1.Items.Add(item);
+                    }
+                }
+                timerGsmMessagePoll.Start();
+                gsmSms.Start_Read_Interval();
+            }
+        }
+
+        private void btnClearMessageList_Click(object sender, EventArgs e)
+        {
+            // clear list view
+            Console.WriteLine("Clear list view");
+            listView1.Items.Clear();
+            listView1.Refresh();
+        }
     }
 }
