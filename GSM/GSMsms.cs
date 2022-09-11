@@ -24,15 +24,20 @@ namespace GSM
 
         private bool initialPoll = true;
 
-        private GSMsms() { }
+        private MessageDbUtil messageDbUtil;
 
-        public static GSMsms getInstance()
+        private GSMsms(MessageDbUtil util)
+        {
+            messageDbUtil = util;
+        }
+
+        public static GSMsms getInstance(MessageDbUtil dbUtil)
         {
             if (instance == null)
             {
                 // creating instance of GSMsms
                 Console.WriteLine("Creating new instance");
-                instance = new GSMsms();
+                instance = new GSMsms(dbUtil);
             }
             return instance;
         }
@@ -50,6 +55,7 @@ namespace GSM
                 string gsmPortConfig = ConfigurationManager.AppSettings["gsmPortNumber"];
                 if (gsmPortConfig == null || gsmPortConfig == "")
                 {
+                    Console.WriteLine("Connected");
                     MessageBox.Show("No port specified, please edit the config file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
                 }
@@ -90,19 +96,15 @@ namespace GSM
         {
             Console.WriteLine("Sending..");
 
-            gsmPort.WriteLine(AT);
-            Thread.Sleep(100);
-            gsmPort.WriteLine("AT+CMGF=1" + Environment.NewLine); // Set mode to Text(1) or PDU(0)
-            Thread.Sleep(100);
-            gsmPort.WriteLine(GSM_TE_SET);
-            Thread.Sleep(100);
-            gsmPort.WriteLine("AT+CMGS=\"" + toAddress + "\"" + Environment.NewLine);
-            Thread.Sleep(100);
-            gsmPort.Write(message);
-            gsmPort.Write(new byte[] { 26 }, 0, 1);
-            Thread.Sleep(100);
+            gsmPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
+            Thread.Sleep(1000);
+            gsmPort.WriteLine($"AT+CMGS=\"{toAddress}\"");
+            Thread.Sleep(1000);
+            gsmPort.WriteLine(message + char.ConvertFromUtf32(26));
+            Thread.Sleep(5000);
 
             string response = gsmPort.ReadExisting();
+            gsmPort.DiscardInBuffer();
 
             if (response.EndsWith("\r\nOK\r\n") && response.Contains("+CMGS:")) // IF CMGS IS MISSING IT MEANS THE MESSAGE WAS NOT SENT!
             {
@@ -125,14 +127,17 @@ namespace GSM
             {
                 if (isConnected)
                 {
+                    gsmPort.DiscardInBuffer();
                     Console.WriteLine("Reading..");
 
-                    gsmPort.WriteLine("AT+CMGF=1" + Environment.NewLine); // Set mode to Text(1) or PDU(0)
+                    gsmPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
                     Thread.Sleep(1000); // Give a second to write
-                    gsmPort.WriteLine("AT+CPMS=\"SM\"" + Environment.NewLine); // Set storage to SIM(SM)
+                    gsmPort.WriteLine("AT+CPMS=\"SM\""); // Set storage to SIM(SM)
                     Thread.Sleep(1000);
-                    gsmPort.WriteLine("AT+CMGL=\"REC UNREAD\"\r" + Environment.NewLine); // What category to read ALL, REC READ, or REC UNREAD
-                    Thread.Sleep(3000);
+                    gsmPort.WriteLine("AT+CMGL=\"REC UNREAD\""); // What category to read ALL, REC READ, or REC UNREAD
+                    Thread.Sleep(1000);
+                    gsmPort.WriteLine("\r");
+                    Thread.Sleep(1000);
 
                     string response = gsmPort.ReadExisting();
 
@@ -154,7 +159,9 @@ namespace GSM
                             string f = m.Groups[6].Value; // contents of message
 
                             // populate messages property
-                            gsmMessages.Add(new Message(c, f));
+                            Message newMessage = new Message(c, f);
+                            gsmMessages.Add(newMessage);
+                            messageDbUtil.addMessage(newMessage);
                             Console.WriteLine(c + ": " + f);
                             m = m.NextMatch();
                         }
@@ -244,7 +251,7 @@ namespace GSM
         {
             try
             {
-                if (timer.Enabled && timer != null)
+                if (timer != null && timer.Enabled)
                 {
                     Console.WriteLine("Stopping the read interval");
                     timer.Stop();

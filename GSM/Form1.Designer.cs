@@ -96,6 +96,7 @@
             // timerGsmMessagePoll
             // 
             this.timerGsmMessagePoll.Interval = 15000;
+            this.timerGsmMessagePoll.Tick += new System.EventHandler(this.timerGsmMessagePoll_Tick);
             // 
             // label4
             // 
@@ -209,9 +210,9 @@
             this.lblStatus.AutoSize = true;
             this.lblStatus.Location = new System.Drawing.Point(124, 34);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(37, 13);
+            this.lblStatus.Size = new System.Drawing.Size(21, 13);
             this.lblStatus.TabIndex = 18;
-            this.lblStatus.Text = "Status";
+            this.lblStatus.Text = "Off";
             // 
             // Form1
             // 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO.Ports;
@@ -15,22 +16,25 @@ namespace GSM
 {
     public partial class Form1 : Form
     {
-        private static GSMsms gsmSms;
+        private GSMsms gsmSms;
+        private MessageDbUtil messageDbUtil;
 
         public Form1()
         {
-            gsmSms = GSMsms.getInstance();
+            string cnUrl = ConfigurationManager.ConnectionStrings["ezedb"].ConnectionString;
+            messageDbUtil = MessageDbUtil.getInstance(cnUrl);
+            gsmSms = GSMsms.getInstance(messageDbUtil);
             InitializeComponent();
-            PopulateComboBoxWithPorts();
+            //PopulateComboBoxWithPorts();
         }
 
-        private void PopulateComboBoxWithPorts()
-        {
-            foreach (string portname in SerialPort.GetPortNames())
-            {
-                cboxPorts.Items.Add(portname);
-            }
-        }
+        //private void PopulateComboBoxWithPorts()
+        //{
+        //    foreach (string portname in SerialPort.GetPortNames())
+        //    {
+        //        cboxPorts.Items.Add(portname);
+        //    }
+        //}
 
 
         private void btnSendMessage_Click(object sender, EventArgs e)
@@ -46,24 +50,14 @@ namespace GSM
 
         private void timerGsmMessagePoll_Tick(object sender, EventArgs e)
         {
-            if (gsmSms.isConnected)
+            List<Message> messages = messageDbUtil.getMessages();
+            listView1.Items.Clear();
+            listView1.Refresh();
+            if (messages == null) return;
+            for (int i = 0; i < messages.Count; i++)
             {
-                if (gsmSms.gsmMessages != null)
-                {
-                    if (gsmSms.gsmMessages.Count > 0)
-                    {
-                        gsmSms.Stop_Read_Interval();
-                        listView1.Items.Clear();
-                        listView1.Refresh();
-                        for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
-                        {
-                            ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
-                            listView1.Items.Add(item);
-                        }
-                        gsmSms.ResetStoredMessages();
-                        gsmSms.Start_Read_Interval();
-                    }
-                }
+                ListViewItem item = new ListViewItem(new string[] { i.ToString(), messages.ElementAt(i).Sender, messages.ElementAt(i).Code });
+                listView1.Items.Add(item);
             }
         }
 
@@ -82,6 +76,7 @@ namespace GSM
             if (gsmSms.isConnected)
             {
                 MessageBox.Show("Connected", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                lblStatus.Text = "Connected";
                 timerGsmMessagePoll.Start();
             }
             else
@@ -96,6 +91,7 @@ namespace GSM
             if(!gsmSms.isConnected)
             {
                 MessageBox.Show("Disconnected", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                lblStatus.Text = "Disconnected";
                 timerGsmMessagePoll.Stop();
             } else
             {
@@ -136,7 +132,7 @@ namespace GSM
                 {
                     for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
                     {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Content });
+                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Code });
                         listView1.Items.Add(item);
                     }
                 }
