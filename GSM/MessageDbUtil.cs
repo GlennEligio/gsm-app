@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data.SqlClient;
 using System.Data;
+using GSM.ADO.NETModels;
 
 namespace GSM
 {
@@ -29,7 +30,7 @@ namespace GSM
 
         public List<Message> getMessages()
         {
-            string query = "SELECT * FROM message";
+            string query = "SELECT * FROM Messages";
             List<Message> messages = new List<Message>();
             using (SqlConnection conn = new SqlConnection(cnUrl))
             {
@@ -42,9 +43,11 @@ namespace GSM
                         {
                             while (dr.Read())
                             {
-                                string sender = dr["sender"].ToString();
-                                string code = dr["code"].ToString();
-                                messages.Add(new Message(sender, code));
+                                int id = Int32.Parse(dr["Id"].ToString());
+                                string sender = dr["Sender"].ToString();
+                                string code = dr["Code"].ToString();
+                                DateTime dateReceived = Convert.ToDateTime(dr["DateReceived"].ToString());
+                                messages.Add(new Message() { Code = code, DateReceived = dateReceived, Id = id, Sender = sender })  ;
                             }
                             return messages;
                         }
@@ -62,7 +65,7 @@ namespace GSM
         {
             try
             {
-                string query = "INSERT INTO message VALUES(@sender, @code);";
+                string query = "INSERT INTO Messages (Sender, Code, DateReceived) VALUES(@Sender, @Code, @DateReceived);";
                 using (SqlConnection conn = new SqlConnection(cnUrl))
                 {
                     try
@@ -70,11 +73,13 @@ namespace GSM
                         conn.Open();
                         using (SqlCommand cmd = new SqlCommand(query, conn))
                         {
-                            cmd.Parameters.Add("@sender", SqlDbType.VarChar);
-                            cmd.Parameters.Add("@code", SqlDbType.VarChar);
+                            cmd.Parameters.Add("@Sender", SqlDbType.VarChar);
+                            cmd.Parameters.Add("@Code", SqlDbType.VarChar);
+                            cmd.Parameters.Add("@DateReceived", SqlDbType.DateTime);
 
-                            cmd.Parameters["@sender"].Value = message.Sender;
-                            cmd.Parameters["@code"].Value = message.Code;
+                            cmd.Parameters["@Sender"].Value = message.Sender;
+                            cmd.Parameters["@Code"].Value = message.Code;
+                            cmd.Parameters["@DateReceived"].Value = message.DateReceived;
 
                             cmd.ExecuteNonQuery();
                         }

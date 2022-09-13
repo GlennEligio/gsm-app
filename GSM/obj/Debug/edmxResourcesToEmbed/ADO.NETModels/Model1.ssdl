@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ezeModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'eze.dbo.Messages' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="Messages">
+    <Key>
+      <PropertyRef Name="Id" />
+      <PropertyRef Name="DateReceived" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Sender" Type="nvarchar" MaxLength="20" />
+    <Property Name="Code" Type="nvarchar" MaxLength="20" />
+    <Property Name="DateReceived" Type="smalldatetime" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="ezeModelStoreContainer">
+    <EntitySet Name="Messages" EntityType="Self.Messages" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [Messages].[Id] AS [Id], 
+    [Messages].[Sender] AS [Sender], 
+    [Messages].[Code] AS [Code], 
+    [Messages].[DateReceived] AS [DateReceived]
+    FROM [dbo].[Messages] AS [Messages]</DefiningQuery>
+    </EntitySet>
+  </EntityContainer>
+</Schema>

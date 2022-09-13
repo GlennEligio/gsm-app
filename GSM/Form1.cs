@@ -11,19 +11,22 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GSM.ADO.NETModels;
 
 namespace GSM
 {
     public partial class Form1 : Form
     {
         private GSMsms gsmSms;
-        private MessageDbUtil messageDbUtil;
+        //private MessageDbUtil messageDbUtil;
+        private MessageRepository repository;
 
         public Form1()
         {
-            string cnUrl = ConfigurationManager.ConnectionStrings["ezedb"].ConnectionString;
-            messageDbUtil = MessageDbUtil.getInstance(cnUrl);
-            gsmSms = GSMsms.getInstance(messageDbUtil);
+            //string cnUrl = ConfigurationManager.ConnectionStrings["ezedb"].ConnectionString;
+            //messageDbUtil = MessageDbUtil.getInstance(cnUrl);
+            repository = MessageRepository.getInstance();
+            gsmSms = GSMsms.getInstance(repository);
             InitializeComponent();
             //PopulateComboBoxWithPorts();
         }
@@ -50,7 +53,7 @@ namespace GSM
 
         private void timerGsmMessagePoll_Tick(object sender, EventArgs e)
         {
-            List<Message> messages = messageDbUtil.getMessages();
+            List<ADO.NETModels.Message> messages = repository.getMessages();
             listView1.Items.Clear();
             listView1.Refresh();
             if (messages == null) return;
@@ -128,11 +131,12 @@ namespace GSM
 
                 listView1.Refresh();
 
-                if (gsmSms.gsmMessages != null)
+                List<ADO.NETModels.Message> messages = repository.getMessages();
+                if (messages != null)
                 {
-                    for (int i = 0; i < gsmSms.gsmMessages.Count; i++)
+                    for (int i = 0; i < messages.Count; i++)
                     {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), gsmSms.gsmMessages.ElementAt(i).Sender, gsmSms.gsmMessages.ElementAt(i).Code });
+                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), messages.ElementAt(i).Sender, messages.ElementAt(i).Code });
                         listView1.Items.Add(item);
                     }
                 }

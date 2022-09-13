@@ -9,3 +9,8 @@ D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.GenerateResource.
 D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.CoreCompileInputs.cache
 D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.exe
 D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.pdb
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.dll
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.SqlServer.dll
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.xml
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.SqlServer.xml
+D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.CopyComplete

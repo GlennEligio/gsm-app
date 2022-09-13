@@ -6,6 +6,9 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Configuration;
 using Timer = System.Timers.Timer;
+using System.Globalization;
+using GSM.ADO.NETModels;
+using Message = GSM.ADO.NETModels.Message;
 
 namespace GSM
 {
@@ -16,7 +19,6 @@ namespace GSM
         private SerialPort gsmPort;
         public bool isConnected { get; private set; } = false;
         public string gsmPortNumber { get; private set; } = "";
-        public List<Message> gsmMessages { get; private set; } = new List<Message>();
 
         private static GSMsms instance = null;
 
@@ -24,28 +26,40 @@ namespace GSM
 
         private bool initialPoll = true;
 
-        private MessageDbUtil messageDbUtil;
+        //private MessageDbUtil messageDbUtil;
+        private MessageRepository messageRepository;
 
-        private GSMsms(MessageDbUtil util)
+        //private GSMsms(MessageDbUtil util)
+        //{
+        //    messageDbUtil = util;
+        //}
+
+        private GSMsms(MessageRepository repo)
         {
-            messageDbUtil = util;
+            messageRepository = repo;
         }
 
-        public static GSMsms getInstance(MessageDbUtil dbUtil)
+        //public static GSMsms getInstance(MessageDbUtil dbUtil)
+        //{
+        //    if (instance == null)
+        //    {
+        //        // creating instance of GSMsms
+        //        Console.WriteLine("Creating new instance");
+        //        instance = new GSMsms(dbUtil);
+        //    }
+        //    return instance;
+        //}
+
+        public static GSMsms getInstance(MessageRepository repo)
         {
             if (instance == null)
             {
                 // creating instance of GSMsms
                 Console.WriteLine("Creating new instance");
-                instance = new GSMsms(dbUtil);
+                instance = new GSMsms(repo);
             }
             return instance;
         }
-
-        //public void setGsmPortNumber(string portNumber)
-        //{
-        //    this.gsmPortNumber = portNumber;
-        //}
 
         public bool Connect()
         {
@@ -88,7 +102,6 @@ namespace GSM
                 gsmPort.Dispose();
                 isConnected = false;
                 initialPoll = true;
-                gsmMessages = new List<Message>();
             }
         }
 
@@ -97,14 +110,13 @@ namespace GSM
             Console.WriteLine("Sending..");
 
             gsmPort.WriteLine("AT+CMGF=1"); // Set mode to Text(1) or PDU(0)
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             gsmPort.WriteLine($"AT+CMGS=\"{toAddress}\"");
-            Thread.Sleep(1000);
+            Thread.Sleep(200);
             gsmPort.WriteLine(message + char.ConvertFromUtf32(26));
-            Thread.Sleep(5000);
+            Thread.Sleep(1000);
 
             string response = gsmPort.ReadExisting();
-            gsmPort.DiscardInBuffer();
 
             if (response.EndsWith("\r\nOK\r\n") && response.Contains("+CMGS:")) // IF CMGS IS MISSING IT MEANS THE MESSAGE WAS NOT SENT!
             {
@@ -125,6 +137,7 @@ namespace GSM
         {
             try
             {
+                List<Message> messages = new List<Message>();
                 if (isConnected)
                 {
                     gsmPort.DiscardInBuffer();
@@ -141,9 +154,6 @@ namespace GSM
 
                     string response = gsmPort.ReadExisting();
 
-                    // clear listView
-                    gsmMessages.Clear();
-
                     if (response.Contains("\r\nOK\r\n"))
                     {
                         Regex r = new Regex(@"\+CMGL: (\d+),""(.+)"",""(.+)"",""(.*)"",""(.+)""\r\n(.+)\r\n");
@@ -155,17 +165,20 @@ namespace GSM
                             string b = m.Groups[2].Value; // status of message (REC READ or REC UNREAD whether msg is read or)
                             string c = m.Groups[3].Value; // phone number
                             string d = m.Groups[4].Value;
-                            string e = m.Groups[5].Value; // date of message received
+                            string e = m.Groups[5].Value; // date of message received in yy/MM/dd,HH:mm:ss+z format
                             string f = m.Groups[6].Value; // contents of message
 
                             // populate messages property
-                            Message newMessage = new Message(c, f);
-                            gsmMessages.Add(newMessage);
-                            messageDbUtil.addMessage(newMessage);
-                            Console.WriteLine(c + ": " + f);
+                            Console.WriteLine(c + ": " + f + ": " + e);
+                            DateTime dt = DateTime.ParseExact(e.Split('+')[0], "yy/MM/dd,HH:mm:ss", CultureInfo.InvariantCulture);
+                            Console.WriteLine(dt.ToString());
+                            Message newMessage = new Message() { Code = f, DateReceived = dt, Sender = c };
+                            messageRepository.addMessage(newMessage);
+                            Console.WriteLine(m);
+                            messages.Add(newMessage);
                             m = m.NextMatch();
                         }
-                        return gsmMessages;
+                        return messages;
                     }
                     else
                     {
@@ -209,26 +222,12 @@ namespace GSM
             }
         }
 
-        public bool ResetStoredMessages()
-        {
-            timer.Stop();
-            try
-            {
-                this.gsmMessages.Clear();
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
         public bool Start_Read_Interval()
         {
             try
             {
                 Console.WriteLine("Start reading in intervals...");
-                if (timer == null)
+                if (timer == null || timer.Enabled == false)
                 {
                     timer = new Timer(15000);
                     timer.Elapsed += OnTimedEvent;
@@ -261,6 +260,7 @@ namespace GSM
             catch (Exception e)
             {
                 Console.WriteLine("Stopping the read interval failed");
+                Console.WriteLine(e.Message);
                 return false;
             }
         }
@@ -274,5 +274,14 @@ namespace GSM
             }
             Read();
         }
+
+        //private string smsDateTimeFormatter(string smsDate)
+        //{
+        //    string[] dateTime = smsDate.Split('+');
+        //    string[] dateAndTime = dateTime[0].Split(',');
+        //    string[] dates = dateAndTime[0].Split('/');
+        //    string newDate = dates[1] + dates[2] + dates[0] + " " + dateAndTime[1];
+        //    return newDate;
+        //}
     }
 }

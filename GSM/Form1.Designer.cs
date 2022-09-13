@@ -40,14 +40,14 @@
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnStartReadInterval = new System.Windows.Forms.Button();
             this.btnDeleteMessages = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnFetchMessage = new System.Windows.Forms.Button();
             this.btnClearMessageList = new System.Windows.Forms.Button();
             this.label = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
+            this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // label1
@@ -147,35 +147,6 @@
             this.btnDeleteMessages.UseVisualStyleBackColor = true;
             this.btnDeleteMessages.Click += new System.EventHandler(this.btnDeleteMessages_Click);
             // 
-            // listView1
-            // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader7,
-            this.columnHeader8,
-            this.columnHeader9});
-            this.listView1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.LabelEdit = true;
-            this.listView1.Location = new System.Drawing.Point(428, 91);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(486, 121);
-            this.listView1.TabIndex = 14;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            // 
-            // columnHeader7
-            // 
-            this.columnHeader7.Text = "Index";
-            // 
-            // columnHeader8
-            // 
-            this.columnHeader8.Text = "Sender";
-            // 
-            // columnHeader9
-            // 
-            this.columnHeader9.Text = "Message";
-            // 
             // btnFetchMessage
             // 
             this.btnFetchMessage.Location = new System.Drawing.Point(428, 238);
@@ -214,16 +185,42 @@
             this.lblStatus.TabIndex = 18;
             this.lblStatus.Text = "Off";
             // 
+            // listView1
+            // 
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listView1.HideSelection = false;
+            this.listView1.Location = new System.Drawing.Point(428, 100);
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(486, 112);
+            this.listView1.TabIndex = 19;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Index";
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Sender";
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Code";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(941, 362);
+            this.Controls.Add(this.listView1);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.label);
             this.Controls.Add(this.btnClearMessageList);
             this.Controls.Add(this.btnFetchMessage);
-            this.Controls.Add(this.listView1);
             this.Controls.Add(this.btnDeleteMessages);
             this.Controls.Add(this.btnStartReadInterval);
             this.Controls.Add(this.btnDisconnect);
@@ -254,14 +251,14 @@
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnStartReadInterval;
         private System.Windows.Forms.Button btnDeleteMessages;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader columnHeader7;
-        private System.Windows.Forms.ColumnHeader columnHeader8;
-        private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.Button btnFetchMessage;
         private System.Windows.Forms.Button btnClearMessageList;
         private System.Windows.Forms.Label label;
         private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
     }
 }
 
