@@ -28,13 +28,18 @@ namespace GSM
 
         public List<Message> getMessages()
         {
-            List<Message> messages = context.Messages.ToList();
+            List<Message> messages = context.Messages.OrderByDescending(m => m.DateReceived).ToList();
             return messages;
         }
 
-        public List<Message> getMessagesOrderByDateReceivedDescending()
+        public List<Message> getMessagesByDateAndSender(DateTime dt, string number)
         {
-            List<Message> messages = context.Messages.OrderByDescending(m => m.DateReceived).ToList();
+            List<Message> messages = context.Messages.Where(m => m.DateReceived.Year == dt.Year 
+                                                            && m.DateReceived.Month == dt.Month 
+                                                            && m.DateReceived.Day == dt.Day 
+                                                            && m.Sender == number)
+                                                     .OrderByDescending(m => m.DateReceived)
+                                                     .ToList();
             return messages;
         }
 

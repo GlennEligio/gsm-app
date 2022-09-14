@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GSM.ADO.NETModels;
+using GSM.Repository;
 
 namespace GSM
 {
@@ -20,25 +21,20 @@ namespace GSM
         private GSMsms gsmSms;
         //private MessageDbUtil messageDbUtil;
         private MessageRepository repository;
+        private ProfessorRepository profRepo;
 
         public Form1()
         {
-            //string cnUrl = ConfigurationManager.ConnectionStrings["ezedb"].ConnectionString;
-            //messageDbUtil = MessageDbUtil.getInstance(cnUrl);
             repository = MessageRepository.getInstance();
+            profRepo = ProfessorRepository.getInstance();
             gsmSms = GSMsms.getInstance(repository);
             InitializeComponent();
-            //PopulateComboBoxWithPorts();
+            
+            List<Professor> professors = profRepo.getProfessors();
+            cboProfName.DataSource = professors;
+            cboProfName.ValueMember = "Contact_Number";
+            cboProfName.DisplayMember = "Name";
         }
-
-        //private void PopulateComboBoxWithPorts()
-        //{
-        //    foreach (string portname in SerialPort.GetPortNames())
-        //    {
-        //        cboxPorts.Items.Add(portname);
-        //    }
-        //}
-
 
         private void btnSendMessage_Click(object sender, EventArgs e)
         {
@@ -53,25 +49,8 @@ namespace GSM
 
         private void timerGsmMessagePoll_Tick(object sender, EventArgs e)
         {
-            List<ADO.NETModels.Message> messages = repository.getMessages();
-            listView1.Items.Clear();
-            listView1.Refresh();
-            if (messages == null) return;
-            for (int i = 0; i < messages.Count; i++)
-            {
-                ListViewItem item = new ListViewItem(new string[] { i.ToString(), messages.ElementAt(i).Sender, messages.ElementAt(i).Code });
-                listView1.Items.Add(item);
-            }
+            refreshMessageDataGridView();
         }
-
-        //private void cboxPorts_SelectedValueChanged(object sender, EventArgs e)
-        //{
-        //    ComboBox cbox = sender as ComboBox;
-        //    if (cbox != null)
-        //    {
-        //        gsmSms.setGsmPortNumber(cbox.Text);
-        //    }
-        //}
 
         private void btnConnect_Click(object sender, EventArgs e)
         {
@@ -124,33 +103,57 @@ namespace GSM
 
         private void btnFetchMessage_Click(object sender, EventArgs e)
         {
-            if (gsmSms.isConnected)
+            refreshMessageDataGridView();
+        }
+
+        private void btnStartMessagePoll_Click(object sender, EventArgs e)
+        {
+            if(timerGsmMessagePoll != null && timerGsmMessagePoll.Enabled == false)
             {
-                timerGsmMessagePoll.Stop();
-                gsmSms.Stop_Read_Interval();
-
-                listView1.Refresh();
-
-                List<ADO.NETModels.Message> messages = repository.getMessages();
-                if (messages != null)
-                {
-                    for (int i = 0; i < messages.Count; i++)
-                    {
-                        ListViewItem item = new ListViewItem(new string[] { i.ToString(), messages.ElementAt(i).Sender, messages.ElementAt(i).Code });
-                        listView1.Items.Add(item);
-                    }
-                }
                 timerGsmMessagePoll.Start();
+            }
+        }
+        private void btnSearchMessage_Click(object sender, EventArgs e)
+        {
+            timerGsmMessagePoll.Stop();
+            DateTime selectedDt = dateTimePicker1.Value.Date;
+            string profNum = cboProfName.SelectedValue.ToString();
+
+            List<ADO.NETModels.Message> messages = repository.getMessagesByDateAndSender(selectedDt, profNum);
+            populateMessageDataGridView(messages);
+        }
+
+        private void btnClearMessages_Click(object sender, EventArgs e)
+        {
+            dataGridView1.DataSource = null;
+            dataGridView1.Refresh();
+        }
+
+        private void btnReadMessage_Click(object sender, EventArgs e)
+        {
+            if(gsmSms.isConnected)
+            {
+                gsmSms.Stop_Read_Interval();
+                gsmSms.Read();
                 gsmSms.Start_Read_Interval();
             }
         }
 
-        private void btnClearMessageList_Click(object sender, EventArgs e)
+        private void refreshMessageDataGridView()
         {
-            // clear list view
-            Console.WriteLine("Clear list view");
-            listView1.Items.Clear();
-            listView1.Refresh();
+            BindingSource bindingSource = new BindingSource();
+            List<ADO.NETModels.Message> messages = repository.getMessages();
+            bindingSource.DataSource = messages;
+            dataGridView1.DataSource = bindingSource;
+            dataGridView1.Refresh();
+        }
+
+        private void populateMessageDataGridView(List<ADO.NETModels.Message> messages) 
+        {
+            BindingSource bi = new BindingSource();
+            bi.DataSource = messages;
+            dataGridView1.DataSource = bi;
+            dataGridView1.Refresh();
         }
     }
 }

@@ -41,13 +41,18 @@
             this.btnStartReadInterval = new System.Windows.Forms.Button();
             this.btnDeleteMessages = new System.Windows.Forms.Button();
             this.btnFetchMessage = new System.Windows.Forms.Button();
-            this.btnClearMessageList = new System.Windows.Forms.Button();
             this.label = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cboProfName = new System.Windows.Forms.ComboBox();
+            this.btnSearchMessage = new System.Windows.Forms.Button();
+            this.btnStartMessagePoll = new System.Windows.Forms.Button();
+            this.btnClearMessages = new System.Windows.Forms.Button();
+            this.btnReadMessage = new System.Windows.Forms.Button();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -73,12 +78,12 @@
             this.txtSendMessage.Location = new System.Drawing.Point(127, 100);
             this.txtSendMessage.Multiline = true;
             this.txtSendMessage.Name = "txtSendMessage";
-            this.txtSendMessage.Size = new System.Drawing.Size(201, 112);
+            this.txtSendMessage.Size = new System.Drawing.Size(248, 112);
             this.txtSendMessage.TabIndex = 5;
             // 
             // btnSendMessage
             // 
-            this.btnSendMessage.Location = new System.Drawing.Point(127, 238);
+            this.btnSendMessage.Location = new System.Drawing.Point(127, 267);
             this.btnSendMessage.Name = "btnSendMessage";
             this.btnSendMessage.Size = new System.Drawing.Size(114, 23);
             this.btnSendMessage.TabIndex = 6;
@@ -90,7 +95,7 @@
             // 
             this.txtPhoneNum.Location = new System.Drawing.Point(127, 63);
             this.txtPhoneNum.Name = "txtPhoneNum";
-            this.txtPhoneNum.Size = new System.Drawing.Size(201, 20);
+            this.txtPhoneNum.Size = new System.Drawing.Size(248, 20);
             this.txtPhoneNum.TabIndex = 3;
             // 
             // timerGsmMessagePoll
@@ -101,7 +106,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(425, 65);
+            this.label4.Location = new System.Drawing.Point(425, 34);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 8;
@@ -109,7 +114,7 @@
             // 
             // btnConnect
             // 
-            this.btnConnect.Location = new System.Drawing.Point(127, 281);
+            this.btnConnect.Location = new System.Drawing.Point(127, 238);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(114, 23);
             this.btnConnect.TabIndex = 10;
@@ -119,7 +124,7 @@
             // 
             // btnDisconnect
             // 
-            this.btnDisconnect.Location = new System.Drawing.Point(261, 281);
+            this.btnDisconnect.Location = new System.Drawing.Point(261, 238);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(114, 23);
             this.btnDisconnect.TabIndex = 11;
@@ -129,19 +134,19 @@
             // 
             // btnStartReadInterval
             // 
-            this.btnStartReadInterval.Location = new System.Drawing.Point(607, 238);
+            this.btnStartReadInterval.Location = new System.Drawing.Point(261, 267);
             this.btnStartReadInterval.Name = "btnStartReadInterval";
-            this.btnStartReadInterval.Size = new System.Drawing.Size(140, 23);
+            this.btnStartReadInterval.Size = new System.Drawing.Size(114, 23);
             this.btnStartReadInterval.TabIndex = 12;
-            this.btnStartReadInterval.Text = "Start Reading Interval";
+            this.btnStartReadInterval.Text = "Start GSM Reading";
             this.btnStartReadInterval.UseVisualStyleBackColor = true;
             this.btnStartReadInterval.Click += new System.EventHandler(this.btnStartReadIntervalMessage_Click);
             // 
             // btnDeleteMessages
             // 
-            this.btnDeleteMessages.Location = new System.Drawing.Point(774, 238);
+            this.btnDeleteMessages.Location = new System.Drawing.Point(127, 296);
             this.btnDeleteMessages.Name = "btnDeleteMessages";
-            this.btnDeleteMessages.Size = new System.Drawing.Size(140, 23);
+            this.btnDeleteMessages.Size = new System.Drawing.Size(114, 23);
             this.btnDeleteMessages.TabIndex = 13;
             this.btnDeleteMessages.Text = "Delete messages";
             this.btnDeleteMessages.UseVisualStyleBackColor = true;
@@ -156,16 +161,6 @@
             this.btnFetchMessage.Text = "Fetch messages";
             this.btnFetchMessage.UseVisualStyleBackColor = true;
             this.btnFetchMessage.Click += new System.EventHandler(this.btnFetchMessage_Click);
-            // 
-            // btnClearMessageList
-            // 
-            this.btnClearMessageList.Location = new System.Drawing.Point(428, 281);
-            this.btnClearMessageList.Name = "btnClearMessageList";
-            this.btnClearMessageList.Size = new System.Drawing.Size(140, 23);
-            this.btnClearMessageList.TabIndex = 16;
-            this.btnClearMessageList.Text = "Clear Message List";
-            this.btnClearMessageList.UseVisualStyleBackColor = true;
-            this.btnClearMessageList.Click += new System.EventHandler(this.btnClearMessageList_Click);
             // 
             // label
             // 
@@ -185,41 +180,104 @@
             this.lblStatus.TabIndex = 18;
             this.lblStatus.Text = "Off";
             // 
-            // listView1
+            // dataGridView1
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(428, 100);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(486, 112);
-            this.listView1.TabIndex = 19;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Location = new System.Drawing.Point(428, 91);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.Size = new System.Drawing.Size(486, 130);
+            this.dataGridView1.TabIndex = 19;
             // 
-            // columnHeader1
+            // dateTimePicker1
             // 
-            this.columnHeader1.Text = "Index";
+            this.dateTimePicker1.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePicker1.Location = new System.Drawing.Point(464, 63);
+            this.dateTimePicker1.Name = "dateTimePicker1";
+            this.dateTimePicker1.Size = new System.Drawing.Size(118, 20);
+            this.dateTimePicker1.TabIndex = 20;
             // 
-            // columnHeader2
+            // label2
             // 
-            this.columnHeader2.Text = "Sender";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(428, 65);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(30, 13);
+            this.label2.TabIndex = 21;
+            this.label2.Text = "Date";
             // 
-            // columnHeader3
+            // label5
             // 
-            this.columnHeader3.Text = "Code";
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(610, 66);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(41, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "Sender";
+            // 
+            // cboProfName
+            // 
+            this.cboProfName.FormattingEnabled = true;
+            this.cboProfName.Location = new System.Drawing.Point(657, 62);
+            this.cboProfName.Name = "cboProfName";
+            this.cboProfName.Size = new System.Drawing.Size(121, 21);
+            this.cboProfName.TabIndex = 23;
+            // 
+            // btnSearchMessage
+            // 
+            this.btnSearchMessage.Location = new System.Drawing.Point(803, 62);
+            this.btnSearchMessage.Name = "btnSearchMessage";
+            this.btnSearchMessage.Size = new System.Drawing.Size(75, 23);
+            this.btnSearchMessage.TabIndex = 24;
+            this.btnSearchMessage.Text = "Search";
+            this.btnSearchMessage.UseVisualStyleBackColor = true;
+            this.btnSearchMessage.Click += new System.EventHandler(this.btnSearchMessage_Click);
+            // 
+            // btnStartMessagePoll
+            // 
+            this.btnStartMessagePoll.Location = new System.Drawing.Point(587, 237);
+            this.btnStartMessagePoll.Name = "btnStartMessagePoll";
+            this.btnStartMessagePoll.Size = new System.Drawing.Size(144, 23);
+            this.btnStartMessagePoll.TabIndex = 25;
+            this.btnStartMessagePoll.Text = "Start Message Poll";
+            this.btnStartMessagePoll.UseVisualStyleBackColor = true;
+            this.btnStartMessagePoll.Click += new System.EventHandler(this.btnStartMessagePoll_Click);
+            // 
+            // btnClearMessages
+            // 
+            this.btnClearMessages.Location = new System.Drawing.Point(746, 237);
+            this.btnClearMessages.Name = "btnClearMessages";
+            this.btnClearMessages.Size = new System.Drawing.Size(104, 23);
+            this.btnClearMessages.TabIndex = 26;
+            this.btnClearMessages.Text = "Clear Messages";
+            this.btnClearMessages.UseVisualStyleBackColor = true;
+            this.btnClearMessages.Click += new System.EventHandler(this.btnClearMessages_Click);
+            // 
+            // btnReadMessage
+            // 
+            this.btnReadMessage.Location = new System.Drawing.Point(261, 295);
+            this.btnReadMessage.Name = "btnReadMessage";
+            this.btnReadMessage.Size = new System.Drawing.Size(114, 23);
+            this.btnReadMessage.TabIndex = 27;
+            this.btnReadMessage.Text = "Read Message";
+            this.btnReadMessage.UseVisualStyleBackColor = true;
+            this.btnReadMessage.Click += new System.EventHandler(this.btnReadMessage_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(941, 362);
-            this.Controls.Add(this.listView1);
+            this.Controls.Add(this.btnReadMessage);
+            this.Controls.Add(this.btnClearMessages);
+            this.Controls.Add(this.btnStartMessagePoll);
+            this.Controls.Add(this.btnSearchMessage);
+            this.Controls.Add(this.cboProfName);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.dateTimePicker1);
+            this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.label);
-            this.Controls.Add(this.btnClearMessageList);
             this.Controls.Add(this.btnFetchMessage);
             this.Controls.Add(this.btnDeleteMessages);
             this.Controls.Add(this.btnStartReadInterval);
@@ -233,6 +291,7 @@
             this.Controls.Add(this.label1);
             this.Name = "Form1";
             this.Text = "GSM app";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -252,13 +311,17 @@
         private System.Windows.Forms.Button btnStartReadInterval;
         private System.Windows.Forms.Button btnDeleteMessages;
         private System.Windows.Forms.Button btnFetchMessage;
-        private System.Windows.Forms.Button btnClearMessageList;
         private System.Windows.Forms.Label label;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DateTimePicker dateTimePicker1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.ComboBox cboProfName;
+        private System.Windows.Forms.Button btnSearchMessage;
+        private System.Windows.Forms.Button btnStartMessagePoll;
+        private System.Windows.Forms.Button btnClearMessages;
+        private System.Windows.Forms.Button btnReadMessage;
     }
 }
 
