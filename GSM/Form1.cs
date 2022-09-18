@@ -16,7 +16,7 @@ using GSM.Repository;
 
 namespace GSM
 {
-    public partial class Form1 : Form
+    public partial class Form1 : MetroFramework.Forms.MetroForm
     {
         private GSMsms gsmSms;
         //private MessageDbUtil messageDbUtil;
@@ -101,12 +101,12 @@ namespace GSM
             }
         }
 
-        private void btnFetchMessage_Click(object sender, EventArgs e)
+        private void btnFetchCodes_Click(object sender, EventArgs e)
         {
             refreshMessageDataGridView();
         }
 
-        private void btnStartMessagePoll_Click(object sender, EventArgs e)
+        private void btnStartPollTodayCodes_Click(object sender, EventArgs e)
         {
             if(timerGsmMessagePoll != null && timerGsmMessagePoll.Enabled == false)
             {
@@ -143,7 +143,9 @@ namespace GSM
         {
             BindingSource bindingSource = new BindingSource();
             List<ADO.NETModels.Message> messages = repository.getMessages();
-            bindingSource.DataSource = messages;
+            var query = from t in messages
+                        select new { t.Sender, t.Code, t.DateReceived };
+            bindingSource.DataSource = query.ToList();
             dataGridView1.DataSource = bindingSource;
             dataGridView1.Refresh();
         }
@@ -151,7 +153,9 @@ namespace GSM
         private void populateMessageDataGridView(List<ADO.NETModels.Message> messages) 
         {
             BindingSource bi = new BindingSource();
-            bi.DataSource = messages;
+            var query = from t in messages
+                        select new { t.Sender, t.Code, t.DateReceived };
+            bi.DataSource = query.ToList();
             dataGridView1.DataSource = bi;
             dataGridView1.Refresh();
         }

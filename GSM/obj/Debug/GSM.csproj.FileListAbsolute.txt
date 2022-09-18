@@ -14,3 +14,6 @@ D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.SqlServer.dl
 D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.xml
 D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\EntityFramework.SqlServer.xml
 D:\Study\programming\Projects\gsm\GSM\GSM\obj\Debug\GSM.csproj.CopyComplete
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\MetroFramework.Design.dll
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\MetroFramework.dll
+D:\Study\programming\Projects\gsm\GSM\GSM\bin\Debug\MetroFramework.Fonts.dll
