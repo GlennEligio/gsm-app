@@ -19,7 +19,6 @@ namespace GSM
     public partial class Form1 : MetroFramework.Forms.MetroForm
     {
         private GSMsms gsmSms;
-        //private MessageDbUtil messageDbUtil;
         private MessageRepository repository;
         private ProfessorRepository profRepo;
 
@@ -49,7 +48,8 @@ namespace GSM
 
         private void timerGsmMessagePoll_Tick(object sender, EventArgs e)
         {
-            refreshMessageDataGridView();
+            List<ADO.NETModels.Message> messages = repository.getMessagesByDate(DateTime.Now);
+            populateMessageDataGridView(messages);
         }
 
         private void btnConnect_Click(object sender, EventArgs e)
@@ -89,21 +89,11 @@ namespace GSM
             }
         }
 
-        private void btnDeleteMessages_Click(object sender, EventArgs e)
-        {
-            string output = gsmSms.Delete();
-            if(output == null)
-            {
-                MessageBox.Show("Delete failed", "Message", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } else
-            {
-                MessageBox.Show("Delete successfully", "Message", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
         private void btnFetchCodes_Click(object sender, EventArgs e)
         {
-            refreshMessageDataGridView();
+            timerGsmMessagePoll.Stop();
+            List<ADO.NETModels.Message> messages = repository.getMessages();
+            populateMessageDataGridView(messages);
         }
 
         private void btnStartPollTodayCodes_Click(object sender, EventArgs e)
@@ -139,22 +129,11 @@ namespace GSM
             }
         }
 
-        private void refreshMessageDataGridView()
-        {
-            BindingSource bindingSource = new BindingSource();
-            List<ADO.NETModels.Message> messages = repository.getMessages();
-            var query = from t in messages
-                        select new { t.Sender, t.Code, t.DateReceived };
-            bindingSource.DataSource = query.ToList();
-            dataGridView1.DataSource = bindingSource;
-            dataGridView1.Refresh();
-        }
-
         private void populateMessageDataGridView(List<ADO.NETModels.Message> messages) 
         {
             BindingSource bi = new BindingSource();
             var query = from t in messages
-                        select new { t.Sender, t.Code, t.DateReceived };
+                        select new { t.Sender, t.Code, Date = t.DateReceived };
             bi.DataSource = query.ToList();
             dataGridView1.DataSource = bi;
             dataGridView1.Refresh();

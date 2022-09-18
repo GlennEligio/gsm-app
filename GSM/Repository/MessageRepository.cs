@@ -31,6 +31,15 @@ namespace GSM
             List<Message> messages = context.Messages.OrderByDescending(m => m.DateReceived).ToList();
             return messages;
         }
+        public List<Message> getMessagesByDate(DateTime dt)
+        {
+            List<Message> messages = context.Messages.Where(m => m.DateReceived.Year == dt.Year
+                                                            && m.DateReceived.Month == dt.Month
+                                                            && m.DateReceived.Day == dt.Day)
+                                                     .OrderByDescending(m => m.DateReceived)
+                                                     .ToList();
+            return messages;
+        }
 
         public List<Message> getMessagesByDateAndSender(DateTime dt, string number)
         {
