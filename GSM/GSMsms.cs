@@ -133,7 +133,13 @@ namespace GSM
         }
 
 
-        public List<Message> Read()
+        public void Read()
+        {
+            Thread readThread = new Thread(new ThreadStart(readThreadStart));
+            readThread.Start();
+        }
+
+        private void readThreadStart()
         {
             try
             {
@@ -172,33 +178,28 @@ namespace GSM
                             Console.WriteLine(c + ": " + f + ": " + e);
                             DateTime dt = DateTime.ParseExact(e.Split('+')[0], "yy/MM/dd,HH:mm:ss", CultureInfo.InvariantCulture);
                             Console.WriteLine(dt.ToString());
-                            Message newMessage = new Message() { Code = f, DateReceived = dt, Sender = c };
+                            Message newMessage = new Message() { Code = f, DateReceived = dt, Sender = c, IsSeen = false };
                             messageRepository.addMessage(newMessage);
                             Console.WriteLine(m);
                             messages.Add(newMessage);
                             m = m.NextMatch();
                         }
-                        return messages;
                     }
                     else
                     {
                         // add more code here to handle error.
                         Console.WriteLine("Error message" + response);
-                        return null;
                     }
                 }
                 else
                 {
                     Console.WriteLine("You are not connected yet to GSM");
-                    return null;
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                return null;
             };
-
         }
 
         public string Delete()

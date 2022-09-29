@@ -83,23 +83,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ADO.NETModels\Message.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Message.Context.tt</DependentUpon>
+    </Compile>
     <Compile Include="ADO.NETModels\Message.cs">
-      <DependentUpon>MessageModel.tt</DependentUpon>
+      <DependentUpon>Message.tt</DependentUpon>
     </Compile>
-    <Compile Include="ADO.NETModels\MessageModel.Context.cs">
+    <Compile Include="ADO.NETModels\Message.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>MessageModel.Context.tt</DependentUpon>
+      <DependentUpon>Message.edmx</DependentUpon>
     </Compile>
-    <Compile Include="ADO.NETModels\MessageModel.cs">
+    <Compile Include="ADO.NETModels\Message1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>MessageModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ADO.NETModels\MessageModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MessageModel.edmx</DependentUpon>
+      <DependentUpon>Message.tt</DependentUpon>
     </Compile>
     <Compile Include="ADO.NETModels\Professor.cs">
       <DependentUpon>ProfessorModel.tt</DependentUpon>
@@ -143,17 +143,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EntityDeploy Include="ADO.NETModels\MessageModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>MessageModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="ADO.NETModels\MessageModel.edmx.diagram">
-      <DependentUpon>MessageModel.edmx</DependentUpon>
-    </None>
     <EntityDeploy Include="ADO.NETModels\ProfessorModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>ProfessorModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <EntityDeploy Include="ADO.NETModels\Message.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>Message.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="ADO.NETModels\Message.edmx.diagram">
+      <DependentUpon>Message.edmx</DependentUpon>
+    </None>
     <None Include="ADO.NETModels\ProfessorModel.edmx.diagram">
       <DependentUpon>ProfessorModel.edmx</DependentUpon>
     </None>
@@ -187,15 +187,15 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ADO.NETModels\MessageModel.Context.tt">
+    <Content Include="ADO.NETModels\Message.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MessageModel.edmx</DependentUpon>
-      <LastGenOutput>MessageModel.Context.cs</LastGenOutput>
+      <DependentUpon>Message.edmx</DependentUpon>
+      <LastGenOutput>Message.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="ADO.NETModels\MessageModel.tt">
+    <Content Include="ADO.NETModels\Message.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>MessageModel.edmx</DependentUpon>
-      <LastGenOutput>MessageModel.cs</LastGenOutput>
+      <DependentUpon>Message.edmx</DependentUpon>
+      <LastGenOutput>Message1.cs</LastGenOutput>
     </Content>
     <Content Include="ADO.NETModels\ProfessorModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

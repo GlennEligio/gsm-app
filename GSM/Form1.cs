@@ -39,10 +39,19 @@ namespace GSM
         {
             if (gsmSms.isConnected)
             {
+                Thread sendThread = new Thread(new ThreadStart(sendThreadStart));
+                sendThread.Start();
+            }
+        }
+
+        private void sendThreadStart()
+        {
+            for (int i = 0; i < 5; i++)
+            {
                 string phoneAddress = txtPhoneNum.Text;
                 string message = txtSendMessage.Text;
                 gsmSms.Send(phoneAddress, message);
-
+                Thread.Sleep(2000);
             }
         }
 
@@ -137,6 +146,14 @@ namespace GSM
             bi.DataSource = query.ToList();
             dataGridView1.DataSource = bi;
             dataGridView1.Refresh();
+        }
+
+        private void btnDeleteMessages_Click(object sender, EventArgs e)
+        {
+            if(gsmSms.isConnected)
+            {
+                gsmSms.Delete();
+            }
         }
     }
 }

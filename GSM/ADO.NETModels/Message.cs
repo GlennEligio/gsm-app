@@ -18,5 +18,6 @@ namespace GSM.ADO.NETModels
         public string Sender { get; set; }
         public string Code { get; set; }
         public System.DateTime DateReceived { get; set; }
+        public Nullable<bool> IsSeen { get; set; }
     }
 }
