@@ -39,15 +39,6 @@ namespace GSM
         {
             if (gsmSms.isConnected)
             {
-                Thread sendThread = new Thread(new ThreadStart(sendThreadStart));
-                sendThread.Start();
-            }
-        }
-
-        private void sendThreadStart()
-        {
-            for (int i = 0; i < 5; i++)
-            {
                 string phoneAddress = txtPhoneNum.Text;
                 string message = txtSendMessage.Text;
                 gsmSms.Send(phoneAddress, message);
